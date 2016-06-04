@@ -5,11 +5,13 @@ import copy
 import numpy
 from pylab import plot, legend, show, xlabel, ylabel, title, ylim, savefig
 
+#parameters
 num_participants = 6
 num_to_eliminate = 3
 num_cakes = 30
+#each number in cake_knowledge_list denotes the amount of cakes known/recognised by a participant
+#participants are assumed to have equal cake knowledge
 cake_knowledge_list = xrange(5,11)
-#cake_knowledge_list = [15]
 num_trials = 100000
 zip_pow = 0.5
 debug = False
@@ -20,6 +22,7 @@ for i in xrange(num_cakes):
     cake_prob[i] = float(1.0)/math.pow(i+1,zip_pow)
 
 #functions
+#weighted sampling
 def weighted_choice(choices):
     values = choices.keys()
     weights = choices.values()
@@ -32,6 +35,7 @@ def weighted_choice(choices):
     i = bisect(cum_weights, x)
     return values[i]
 
+#generate a person's cake knowledge
 def gen_person_cake(ck):
     person_cake = []
     for i in xrange(num_participants):
@@ -54,8 +58,8 @@ for cake_knowledge in cake_knowledge_list:
             #print "trial", nt, "\r"
         person_cake = []
         #give everyone knowledge of random selection of cakes
-        #for np in xrange(num_participants):
-        #    person_cake.append(set(random.sample(xrange(30), cake_knowledge)))
+        #popular cakes are known by more people
+        #probability of a cake known by a participant follows a zipfian distribution
         person_cake = gen_person_cake(cake_knowledge)
         if debug:
             print person_cake
@@ -65,6 +69,7 @@ for cake_knowledge in cake_knowledge_list:
         participant_remaining = set(xrange(num_participants))
         while True:
             #terminate game when no cake left
+            #(in this case the number of failed participants could be less than 3)
             if len(cake_remaining) == 0:
                 break
 
@@ -75,6 +80,7 @@ for cake_knowledge in cake_knowledge_list:
                     print "\nparticipant =", participant_id
                     print "\tremainining cake =", cake_remaining
                     print "\tcake overlap =", overlap
+                #participant knows no more cake, select a random cake and fail
                 if len(overlap) == 0:
                     cake_remaining.remove(random.choice(list(cake_remaining)))
                     fail[participant_id] += 1
@@ -83,6 +89,7 @@ for cake_knowledge in cake_knowledge_list:
                     participant_remaining.remove(participant_id)
                     if (num_participants - len(participant_remaining)) == num_to_eliminate:
                         break
+                #participant selects randomly a remaining cake that he/she knows
                 else:
                     cake_remaining.remove(random.choice(list(overlap)))
                 
