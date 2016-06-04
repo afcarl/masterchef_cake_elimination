@@ -99,12 +99,11 @@ for cake_knowledge in cake_knowledge_list:
     print fail
     results.append(fail)
 
-#plot the results (participants' fail chance vs # cake knowledge)
+#plot the results (participants' fail prob vs # cakes known)
 xs = range(1, num_participants+1)
 for ys in results:
     plot(xs, ys)
-lg = [ "# cakes known = " + str(item) for item in cake_knowledge_list ] 
-legend(lg)
+legend([ "# cakes known = " + str(item) for item in cake_knowledge_list ])
 xlabel("participant's turn number")
 ylabel("fail probability")
 ylim(0.3, 0.7)
