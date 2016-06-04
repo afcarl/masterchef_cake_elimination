@@ -2,12 +2,15 @@ import random
 from bisect import bisect
 import math
 import copy
+import numpy
+from pylab import plot, legend, show, xlabel, ylabel, title, ylim, savefig
 
 num_participants = 6
 num_to_eliminate = 3
 num_cakes = 30
-cake_knowledge_set = xrange(5,16)
-num_trials = 50000
+cake_knowledge_list = xrange(5,11)
+#cake_knowledge_list = [15]
+num_trials = 100000
 zip_pow = 0.5
 debug = False
 
@@ -42,7 +45,8 @@ def gen_person_cake(ck):
     return person_cake
 
 #main
-for cake_knowledge in cake_knowledge_set:
+results = []
+for cake_knowledge in cake_knowledge_list:
     print "cake_knowledge =", cake_knowledge
     fail = [0]*num_participants
     for nt in xrange(num_trials):
@@ -60,6 +64,10 @@ for cake_knowledge in cake_knowledge_set:
         participant_id = 0
         participant_remaining = set(xrange(num_participants))
         while True:
+            #terminate game when no cake left
+            if len(cake_remaining) == 0:
+                break
+
             participant_id = participant_id % num_participants
             if participant_id in participant_remaining:
                 overlap = person_cake[participant_id] & cake_remaining
@@ -68,6 +76,7 @@ for cake_knowledge in cake_knowledge_set:
                     print "\tremainining cake =", cake_remaining
                     print "\tcake overlap =", overlap
                 if len(overlap) == 0:
+                    cake_remaining.remove(random.choice(list(cake_remaining)))
                     fail[participant_id] += 1
                     if debug:
                         print "\t****FAILED****", fail
@@ -79,8 +88,26 @@ for cake_knowledge in cake_knowledge_set:
                 
             participant_id += 1
 
-    fail = [ ("{0:.3f}".format(float(item)/(num_trials))) for item in fail]
+    fail = [ float(item)/(num_trials) for item in fail]
     print fail
+    results.append(fail)
 
-        
-        
+#plot the results (participants' fail chance vs # cake knowledge)
+xs = range(1, num_participants+1)
+for ys in results:
+    plot(xs, ys)
+lg = [ "# cakes known = " + str(item) for item in cake_knowledge_list ] 
+legend(lg)
+xlabel("participant's turn number")
+ylabel("fail probability")
+ylim(0.3, 0.7)
+title("fail probability vs. participant's turn number")
+#show()
+savefig("fail_prob_vs_turn_number.pdf")
+savefig("fail_prob_vs_turn_number.png")
+
+#calculate mean fail probability over cake knowledge
+results = numpy.array(results)
+print
+for i in xrange(results.shape[1]):
+    print "Average probability for turn number", i+1, "=", ("%.3f" % numpy.mean(results[:,i])), "(", ("%.3f" % numpy.std(results[:,i])), ")"
