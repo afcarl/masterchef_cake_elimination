@@ -1,6 +1,6 @@
 The MasterChef Australia cake elimination test is a test where 6 participants were asked to name a number of cakes that were presented in front of them. The test works as follow: each participant is randomly assigned a number that specifies the order the participant picks and names a cake (i.e. participant #1 starts first, followed by participant #2, #3, ..., #6, and then back to #1); the test finishes when 3 participants failed to name the cake they picked.
 
-The big question is: **is the test fair**? That is, if all participants have the same level of skill, does the turn number of the participants give them any unfair advantage or disadvantage? For those who are interested only in the results, please skip to [results](#results).
+The big question: **is the test fair**? That is, if all participants have the same level of skill, does the turn number of the participants give them any unfair advantage or disadvantage? For those who are interested only in the results, please skip to [results](#results).
 
 It is probably possible to work out the probability of a participant failing the test given his/her turn number, but an alternate way of computing it is by simulating the cake elimintation test and repeating it many times (e.g. 100K times) to see how the probabilities converge. In order to simulate the cake elimintation test, we will define several parameters and make a few simplifying assumptions.
 
