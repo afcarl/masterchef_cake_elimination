@@ -23,6 +23,12 @@ In real life a participant might strategise his/her decision and opt to name mor
 * Number of Trials = 100,000
 * Zipfian Distribution Power = 0.5
 
+To run the script: python compute_turn_prob.py
+
+Paramters are given at the top of the script. The script generates a plot and some results summarising mean probability (and standard deviation) for each participant.
+
+Dependencies: python, numpy and matplotlib
+
 # <a name="results"></a>Results
 <img src="./fail_prob_vs_turn_number.png" width="600">
 
