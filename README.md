@@ -1,19 +1,41 @@
-cake_knowledge = 5
-[0.58123, 0.57113, 0.52986, 0.47572, 0.43208, 0.40998]
-cake_knowledge = 6
-[0.53204, 0.51973, 0.51916, 0.50854, 0.48357, 0.43696]
-cake_knowledge = 7
-[0.55123, 0.51647, 0.48605, 0.48017, 0.48563, 0.48025]
-cake_knowledge = 8
-[0.56333, 0.5457, 0.50483, 0.46398, 0.45165, 0.46811]
-cake_knowledge = 9
-[0.51842, 0.55073, 0.54071, 0.49646, 0.44886, 0.43172]
-cake_knowledge = 10
-[0.44388, 0.50165, 0.54859, 0.53952, 0.48572, 0.43132]
+The MasterChef Australia Cake Elimination is a test where 6 participants were asked to name a number of cakes that were presented in front of them. The test works as follow: each participant is randomly assigned a number that specifies the order that the participants pick and name a cake (i.e. particpant #1 starts first, followed by participant #2, #3, ..., #6, and then back to #1); the test finishes when 3 participants failed to name the cake they picked.
 
-Average probability for turn number 1 = 0.532 ( 0.044 )
-Average probability for turn number 2 = 0.534 ( 0.024 )
-Average probability for turn number 3 = 0.522 ( 0.021 )
-Average probability for turn number 4 = 0.494 ( 0.025 )
-Average probability for turn number 5 = 0.465 ( 0.021 )
-Average probability for turn number 6 = 0.443 ( 0.024 )
+The big question is: **is the test fair**? That is, if all participants have the same level of skill, does the turn number of the participants give them any unfair advantage or disadvantage? For those who are interested only in the results, please jump to [results](#results).
+
+It is probably possible to work out the probability of a participant failing the test given his/her turn number, but an alternate way of achieving it is by simulating the cake elimintation test and repeats it many times (e.g. 100K trials) to see how the probabilities converge. In order to simulate the cake elimintation test, we will define several parameters and make a few simplifying assumptions.
+
+### Definition of Equal Skill Level
+By skill level we define it as the number of cakes that a participant knows from the presented cakes. Although every participant is assumed to know the same number of cakes (equal skill level), the types of cakes they know could vary. We could simulate this by giving a participant a random set of cakes, but in real life certain cakes are more popular than others, and so we model this using weighted sampling by drawing cakes from a [zipfian distribution](https://en.wikipedia.org/wiki/Zipf%27s_law), where popular cakes are more likely to be drawn than unpopular cakes. In our model, the probability of a participant knowing a cake of a particular rank (rank 1 = most popular cake) is given by 1 / (rank)^p, where p is a parameter. We use p = 0.5 in our model, so the most popular cake (rank 1) has a probability of 1.0 being known, the second most popular cake (rank 2) = 1 / 2^0.5 = 0.71, etc.
+
+It is hard to estimate the reasonable number of cakes that the participants should know. As such, we present results showing a range from 5 to 10. A complete amateur such as myself can identify 4-5 cakes so that is probably a good lower bound, and anything beyond 13 or 14 often results in situation where less than 3 participants are eliminated.
+
+### A Binary View of Knowledge
+ In real life a participant probably knows a cake with certain confidence. The simulation simplifies the process by assuming that a participant either knows a cake with 100% confidence or otherwise. When a participant knows no cake in the remaining unnamed cakes, he/she simply chooses a cake (randomly) and fails.
+ 
+### Random Selection of Remaining Known Cakes
+In real life a participant might strategise his/her decision and opt to name more popular cakes and save unpopular cakes for later rounds. We do not model this --- a participant simply selects a random known cake and names it.
+
+### Summary of Parameters
+* Number of Participants = 6
+* Number of Participants to Eliminate = 3
+* Number of Cakes At the Start = 30
+* Number of Cakes Every Participant Knows = 5 to 10
+* Number of Trials = 100,000
+* Zipfian Distribution Power = 0.5
+
+# <a name="results"></a>Results
+<img src="./fail_prob_vs_turn_number.png" width="600">
+
+The plot gives the probability of a participant with turn number X failing the test with probability Y for a range of skills. Let's call the skill level, i.e. the number of cakes that each participant knows, as C.
+
+In a completely fair game where everyone knows the same number of cakes (noting that the **types** of the cake they know could, of course, be different), each participant regardless of their turn number should have 50% chance of failing (3/6) for all C values. As we can see from the graph, for C = 5-9, the odds are heavily favoured against the earlier participants (#1 and #2) and heavily favoured for latter participants (#5 and #6).
+
+|C Values|P#1 AvgProb|P#2 AvgProb|P#3 AvgProb|P#4 AvgProb|P#5 AvgProb|P#6 AvgProb|
+|:--:|:---:|:---:|:---:|:---:|:---:|:---:|
+|5-9 |0.549|0.541|0.516|0.485|0.460|0.445|
+|5-10|0.532|0.534|0.522|0.494|0.465|0.443|
+
+The table gives the probability of a participant failing the test, averaged over a range of C values. It shows that participant #1 and #2 are about 10% more likely to fail compared to Participant #6, even though everyone knows the same number of cakes.
+
+# Conclusion
+Is the test completely fair? Most probably not. Although the game doesn't look that much off from a truely fair game --- the deviation of probability is about 5% from true chance --- it is probably undeniable that the earlier participants are somewhat disadvantaged, and coincidentally the first participant to fail in the test is participant #1...
